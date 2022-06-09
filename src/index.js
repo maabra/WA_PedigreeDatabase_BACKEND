@@ -33,7 +33,7 @@ app.get("/psi", (req, res) => {
   res.json(psi);
 });
 
-app.get("/unos_vlasnika", (req, res) => {
+app.get("/unos_uzgajivaca", (req, res) => {
   res.json({
     status: "Unos podataka vlasnika se vrši ovdje i biti će POST",
   });
