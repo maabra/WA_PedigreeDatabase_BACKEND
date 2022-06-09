@@ -26,12 +26,12 @@ app.get("/leglo_lista", (req, res) => {
 });
 
 app.get("/uzgajivacnice", (req, res) => {
-    res.json(uzgajivacnice);
-  });
+  res.json(uzgajivacnice);
+});
 
-  app.get("/psi", (req, res) => {
-    res.json(psi);
-  });
+app.get("/psi", (req, res) => {
+  res.json(psi);
+});
 
 app.get("/unos_vlasnika", (req, res) => {
   res.json({
@@ -49,14 +49,45 @@ app.get("/unos_psa", (req, res) => {
 
 app.get("/unos_uzgajivacnice", (req, res) => {
   res.json({
-    status: "Unos podataka uzgajivacnice se vrši ovdje i biti će POST",
+    status: "Unos podataka uzgajivačnice se vrši ovdje i biti će POST",
   });
   res.send();
 });
 
+app.get("/unos_legla", (req, res) => {
+  res.json({
+    status: "Unos podataka legla se vrši ovdje i biti će POST",
+  });
+  res.send();
+});
+
+app.get("/azuriranje_psa", (req, res) => {
+  res.json({
+    status: "Ažuriranje podataka psa se vrši ovdje i biti će PUT",
+  });
+  res.send();
+});
+app.get("/azuriranje_vlasnika", (req, res) => {
+  res.json({
+    status: "Ažuriranje podataka vlasnika se vrši ovdje i biti će PUT",
+  });
+  res.send();
+});
+app.get("/azuriranje_uzgajivacnice", (req, res) => {
+  res.json({
+    status: "Ažuriranje podataka uzgajivačnice se vrši ovdje i biti će PUT",
+  });
+  res.send();
+});
+app.get("/azuriranje_legla", (req, res) => {
+  res.json({
+    status: "Ažuriranje podataka legla se vrši ovdje i biti će PUT",
+  });
+  res.send();
+});
 app.get("/brisanje_psa", (req, res) => {
   res.json({
-    status: "Brisanje podataka psa se vrši ovdje i biti će POST",
+    status: "Brisanje podataka psa se vrši ovdje i biti će DELETE",
   });
   res.send();
 });
