@@ -1,2 +1,3 @@
-# wa-backend
-Početni template za back-end web aplikacije (node.js/express/mongo)
+# WA_PedigreeDatabase_BACKEND
+
+Projekt koji simulira databazu čistokrvnih Cavalier King Charles kavalira.
