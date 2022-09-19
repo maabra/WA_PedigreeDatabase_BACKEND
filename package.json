@@ -1,23 +1,23 @@
 {
-  "name": "instaclone-back",
+  "name": "backend-template",
   "version": "1.0.0",
-  "type": "module",
-  "description": "Instaclone backend",
+  "description": "Pedigree Database",
   "main": "src/index.js",
   "scripts": {
-    "serve": "nodemon src/index.js",
+    "serve": "nodemon --exec babel-node src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Nikola Tanković",
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
-    "express": "^4.18.1"
+    "express": "^4.18.1",
+    "mongodb": "^4.10.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.13.15",
-    "@babel/node": "^7.13.13",
-    "@babel/preset-env": "^7.13.15",
-    "nodemon": "^2.0.16"
+    "@babel/core": "^7.19.1",
+    "@babel/node": "^7.19.1",
+    "@babel/preset-env": "^7.19.1",
+    "nodemon": "^2.0.20"
   }
 }
