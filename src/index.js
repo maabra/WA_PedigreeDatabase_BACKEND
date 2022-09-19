@@ -1,111 +1,82 @@
-import express from "express";
-import uzgajivaci from "./uzgajivacidb.js";
-import legla from "./legladb.js";
-import uzgajivacnice from "./uzgajivacnicedb.js";
-import psi from "./psidb.js";
+import express, { query } from "express";
 import cors from "cors";
-
-const app = express(); // instanciranje aplikacije
-const port = 3000; // port na kojem će web server slušati
-
+import mongo from "mongodb";
+import {dogs} from "./store.js"
+const app = express()  // instanciranje aplikacije
+const port = 3000  // port na kojem će web server slušati
+app.use(express.json());
 app.use(cors());
+const bodyParser = require('body-parser');
+const path = require('path');
 
-app.get("/", (req, res) => {
-  res.json({
-    status:
-      "Početna stranica Pedigree Databasea, dostupne stranice: /uzgajivaci_lista, /leglo_lista, /pas, /uzgajivacnice, /unosvlasnika, /unospsa, /unosuzgajivacnice, /brisanjepsa",
-  });
-});
 
-app.get("/uzgajivaci_lista", (req, res) => {
-  res.json(uzgajivaci);
-});
+app.use(bodyParser.urlencoded({extended : true}));
+app.use(bodyParser.json());
 
-app.get("/leglo_lista", (req, res) => {
-  res.json(legla);
-});
+console.log(dogs)
+app.get("/dog", (req, res) => {
+  let psi = dogs
+  res.json(dogs)
+}
+)
+/*app.post("/adddog", async (req, res) => {
+    let data = req.body;
+  
+    let time = new Date().getTime();
+    data.postedAt = new Date(time).toISOString().substring(0, 10);
+  
+    let db = await connect();
+    let result = await db.collection("Dogs").insertOne(data);
+  
+    if (result) {
+      res.json(result);
+    } else {
+      res.json({ status: "Nije spremljeno" });
+    }
+  });
 
-app.get("/uzgajivacnice", (req, res) => {
-  res.json(uzgajivacnice);
-});
+app.get("/dog", async (req, res) => {
+  let db = await connect();
+  let query = req.query;
+  let selekcija = {};
+      dogName: "",
+      dogSex: "",
+      dogBirth: "",
+      dogKennel: "",
+      dogCacib: "",
+      dogCac: "",
+      dogMother: "",
+      dogFather: "",
+      dogGrandmaMother: "",
+      dogGrandpaMother: "",
+      dogGrandmaFather: "",
+      dogGrandpaFather: "",
+  if (query._any) {
+    let search = query._any;
+    let terms = search.split(" ");
 
-app.get("/psi", (req, res) => {
-  res.json(psi);
-});
+    selekcija = {
+      $and: [],
+    };
 
-app.get("/unos_uzgajivaca", (req, res) => {
-  res.json({
-    status: "Unos podataka vlasnika se vrši ovdje i biti će POST",
-  });
-  res.send();
-});
+    terms.forEach((term) => {
+      let or = {
+        $or: [],
+      };
 
-app.get("/unos_psa", (req, res) => {
-  res.json({
-    status: "Unos podataka psa se vrši ovdje i biti će POST",
-  });
-  res.send();
-});
+      atributi.forEach((atribut) => {
+        or.$or.push({ [atribut]: new RegExp(term) });
+      });
 
-app.get("/unos_uzgajivacnice", (req, res) => {
-  res.json({
-    status: "Unos podataka uzgajivačnice se vrši ovdje i biti će POST",
-  });
-  res.send();
-});
+      selekcija.$and.push(or);
+    });
+  }
 
-app.get("/unos_legla", (req, res) => {
-  res.json({
-    status: "Unos podataka legla se vrši ovdje i biti će POST",
-  });
-  res.send();
-});
+  let cursor = await db.collection("Dogs").find(selekcija);
+  let results = await cursor.toArray();
 
-app.get("/azuriranje_psa", (req, res) => {
-  res.json({
-    status: "Ažuriranje podataka psa se vrši ovdje i biti će PUT",
-  });
-  res.send();
-});
-app.get("/azuriranje_vlasnika", (req, res) => {
-  res.json({
-    status: "Ažuriranje podataka vlasnika se vrši ovdje i biti će PUT",
-  });
-  res.send();
-});
-app.get("/azuriranje_uzgajivacnice", (req, res) => {
-  res.json({
-    status: "Ažuriranje podataka uzgajivačnice se vrši ovdje i biti će PUT",
-  });
-  res.send();
-});
-app.get("/azuriranje_legla", (req, res) => {
-  res.json({
-    status: "Ažuriranje podataka legla se vrši ovdje i biti će PUT",
-  });
-  res.send();
-});
-app.get("/brisanje_psa", (req, res) => {
-  res.json({
-    status: "Brisanje podataka psa se vrši ovdje i biti će DELETE",
-  });
-  res.send();
-});
-app.use(function (req, res, next) {
-  var err = new Error("Ne postoji");
-  err.status = 404;
-  next(err);
-});
-
-/*
-app.use(function (err, req, res, next) {
-  res.status(err.status || 500);
-  res.send({
-    status: err.status || 500,
-    message: err.message,
-  });
+  res.send(results);
 });
 */
-app.listen(port, () =>
-  console.log(`\n\n[DONE] Backend: http://localhost:${port}/\n\n`)
-);
+
+app.listen(port, () => console.log(`Slušam na portu ${port}!`))
