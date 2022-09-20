@@ -1,24 +1,65 @@
+/*require("dotenv").config();
+
 import express, { query } from "express";
 import cors from "cors";
 import mongo from "mongodb";
-import {dogs} from "./store.js"
-const app = express()  // instanciranje aplikacije
-const port = 3000  // port na kojem će web server slušati
+import { uzgajivaci } from "./uzgajivacidb.js";
+import { legla } from "./legladb.js";
+import { dogs } from "./psidb.js";
+
+const port = 3000; // port na kojem će web server slušati
 app.use(express.json());
 app.use(cors());
-const bodyParser = require('body-parser');
-const path = require('path');
+const bodyParser = require("body-parser");
+const path = require("path");
 
-
-app.use(bodyParser.urlencoded({extended : true}));
+const mongoose = require("mongoose");
+const app = express();
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-console.log(dogs)
-app.get("/dog", (req, res) => {
-  let psi = dogs
-  res.json(dogs)
-}
-)
+const mongoString = process.env.DATABASE_URL;
+mongoose.connect(mongoString);
+const database = mongoose.connection;
+
+console.log(dogs);*/
+require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, './.env') });
+const express = require('express');
+const mongoose = require('mongoose');
+const mongoString = process.env.DATABASE_URL;
+mongoose.connect(mongoString);
+const app = express();
+app.use(express.json());
+const database = mongoose.connection;
+
+const routes = require('./routes');
+app.use('/api', routes)
+database.on('error', (error) => {
+    console.log(error)
+})
+
+database.once('connected', () => {
+    console.log('Database Connected');
+})
+
+app.listen(3000, () => {
+    console.log(`Server Started at ${3000}`)
+})
+
+
+app.post("/adddog", async (req, res) => {
+  let data = req.body;
+
+  let result = await connect.collection("dogs").insertOne(data);
+
+  if (result) {
+    res.json(result);
+  } else {
+    res.json({ status: "Failed" });
+  }
+});
 /*app.post("/adddog", async (req, res) => {
     let data = req.body;
   
@@ -78,5 +119,3 @@ app.get("/dog", async (req, res) => {
   res.send(results);
 });
 */
-
-app.listen(port, () => console.log(`Slušam na portu ${port}!`))
