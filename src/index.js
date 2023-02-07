@@ -33,6 +33,8 @@ mongoose.connect(mongoString);
 const app = express();
 app.use(express.json());
 const database = mongoose.connection;
+const cors = require("cors");
+app.use(cors());
 
 const routes = require('./routes');
 app.use('/api', routes)
@@ -49,7 +51,7 @@ app.listen(3000, () => {
 })
 
 
-app.post("/adddog", async (req, res) => {
+/*app.post("/adddog", async (req, res) => {
   let data = req.body;
 
   let result = await connect.collection("dogs").insertOne(data);
@@ -60,7 +62,9 @@ app.post("/adddog", async (req, res) => {
     res.json({ status: "Failed" });
   }
 });
-/*app.post("/adddog", async (req, res) => {
+
+
+app.post("/adddog", async (req, res) => {
     let data = req.body;
   
     let time = new Date().getTime();
