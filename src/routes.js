@@ -2,23 +2,20 @@ const express = require("express");
 const { db } = require("./model");
 const router = express.Router();
 
-import mongo from "mongodb";
 const MongoDB = require('mongodb');
 const ObjectId = MongoDB.ObjectId;
 
 module.exports = router;
 const Model = require("./model");
 
-//Update by ID Method
-router.patch("/update/:id", (req, res) => {
-  res.send("Update by ID API");
-});
 
 //Delete by ID Method
-router.delete("/delete/:id", (req, res) => {
+/*router.delete("/delete/:id", (req, res) => {
+  
+  await Model.findById(req.params.id);
   res.send("Delete by ID API");
 });
-
+*/
 //Get by ID Method
 
 router.get("/getOne/:id", async (req, res) => {
@@ -129,12 +126,35 @@ router.get("/getAll", async (req, res) => {
 router.patch("/update/:id", async (req, res) => {
   try {
     const id = req.params.id;
-    const updatedData = req.body;
+    
+    let data = req.body;
+    console.log(id);
+    console.log(data);
+    delete data.pas_id;
+
+    /*const updatedData = new Model({
+      dogName: req.body.dogName,
+      dogSex: req.body.dogSex,
+      dogBirth: req.body.dogBirth,
+      dogKennel: req.body.dogKennel,
+      dogCacib: req.body.dogCacib,
+      dogCac: req.body.dogCac,
+      dogMother: req.body.dogMother,
+      dogFather: req.body.dogFather,
+      dogGrandmaMother: req.body.dogGrandmaMother,
+      dogGrandpaMother: req.body.dogGrandpaMother,
+      dogGrandmaFather: req.body.dogGrandmaFather,
+      dogGrandpaFather: req.body.dogGrandpaFather,
+      dogPedNr: req.body.dogPedNr,
+    });*/
+    const updatedData = { $set: data };
     const options = { new: true };
+//console.log(data._id);
+    await Model.findByIdAndUpdate(id, updatedData, options);
 
-    const result = await Model.findByIdAndUpdate(id, updatedData, options);
 
-    res.send(result);
+    res.status(200).json(`Podatci o psu imena <${data.dogName}> su ažurirani!`);
+
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -145,7 +165,7 @@ router.delete("/delete/:id", async (req, res) => {
   try {
     const id = req.params.id;
     const data = await Model.findByIdAndDelete(id);
-    res.send(`Document with ${data.name} has been deleted..`);
+    res.status(200).json(`Podatci o psu imena <${data.dogName}> su izbrisani!`);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
