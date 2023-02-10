@@ -1,33 +1,46 @@
 const express = require("express");
-const { db } = require("./model");
+const { db } = require("./modelDog");
 const router = express.Router();
 
-const MongoDB = require('mongodb');
+const MongoDB = require("mongodb");
 const ObjectId = MongoDB.ObjectId;
 
 module.exports = router;
-const Model = require("./model");
-
+const ModelDog = require("./modelDog");
+const ModelKennel = require("./modelKennel");
 
 //Delete by ID Method
 /*router.delete("/delete/:id", (req, res) => {
   
-  await Model.findById(req.params.id);
+  await ModelDog.findById(req.params.id);
   res.send("Delete by ID API");
 });
 */
 //Get by ID Method
 
 router.get("/getOne/:id", async (req, res) => {
-
-  const dog = await Model.findById(req.params.id);
+  const dog = await ModelDog.findById(req.params.id);
   res.json(dog);
-  });
+});
+
+router.get("/getOneKennel/:id", async (req, res) => {
+  const kennel = await ModelKennel.findById(req.params.id);
+  res.json(kennel);
+});
+/*
+router.get("/getDogKennel/:id", async (req, res) => {
+  const kennel = await ModelKennel.findById(req.params.id)
+    .populate("dogKennel")
+    .exec();
+  console.log("Dog's kennel name:", kennel.nameKennel);
+  res.json(kennel.nameKennel);
+});*/
+
 /*
 
 router.get("/getAll", async (req, res) => {
   try {
-    const data = await Model.find();
+    const data = await ModelDog.find();
     res.json(data);
 
   
@@ -51,7 +64,7 @@ router.get("/getAll", async (req, res) => {
 
 router.get("/getOne/:id", async (req, res) => {
   try {
-    const data = await Model.findById(req.params.id);
+    const data = await ModelDog.findById(req.params.id);
     res.json(data);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -60,7 +73,7 @@ router.get("/getOne/:id", async (req, res) => {
 
 router.get("/getOne/:id", async (req, res) => {
   const _id = req.params.id;
-  Model.findOne({ _id: _id }, (error, dog) => {
+  ModelDog.findOne({ _id: _id }, (error, dog) => {
     if (error) {
       res.json(error);
     } else {
@@ -73,8 +86,8 @@ router.get("/getOne/:id", async (req, res) => {
 });*/
 
 //Post model
-router.post("/postDog", async (req, res) => {
-  const data = new Model({
+/*router.post("/postDog", async (req, res) => {
+  const data = new ModelDog({
     dogName: req.body.dogName,
     dogSex: req.body.dogSex,
     dogBirth: req.body.dogBirth,
@@ -96,15 +109,40 @@ router.post("/postDog", async (req, res) => {
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
+});*/
+router.post("/postDog", async (req, res) => {
+  const data = new ModelDog({
+    dogName: req.body.dogName,
+    dogSex: req.body.dogSex,
+    dogBirth: req.body.dogBirth,
+    dogKennel: req.body.dogKennel,
+    dogCacib: req.body.dogCacib,
+    dogCac: req.body.dogCac,
+    dogMother: req.body.dogMother,
+    dogFather: req.body.dogFather,
+    dogGrandmaMother: req.body.dogGrandmaMother,
+    dogGrandpaMother: req.body.dogGrandpaMother,
+    dogGrandmaFather: req.body.dogGrandmaFather,
+    dogGrandpaFather: req.body.dogGrandpaFather,
+    dogPedNr: req.body.dogPedNr,
+  });
+
+  try {
+    await db.collection("dogs").insertOne(data);
+    
+    const KennelToSave = await ModelKennel.findOneAndUpdate({ _id: data.dogKennel }, { $push: { dogs: data._id }})
+    res.json(KennelToSave);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
 });
 
-router.get("/getAll", async (req, res) => {
+router.get("/getAllDogs", async (req, res) => {
   try {
-    const data = await Model.find();
+    const data = await ModelDog.find();
     res.json(data);
 
-  
-   /* //delete dogs.dogName;
+    /* //delete dogs.dogName;
     delete dogs.dogSex;
     delete dogs.dogBirth;
     //delete dogs.dogKennel;
@@ -122,17 +160,25 @@ router.get("/getAll", async (req, res) => {
   }
 });
 
+router.get("/getAllKennels", async (req, res) => {
+  try {
+    const data = await ModelKennel.find();
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 //Update by ID Method
 router.patch("/update/:id", async (req, res) => {
   try {
     const id = req.params.id;
-    
+
     let data = req.body;
     console.log(id);
     console.log(data);
     delete data.pas_id;
 
-    /*const updatedData = new Model({
+    /*const updatedData = new ModelDog({
       dogName: req.body.dogName,
       dogSex: req.body.dogSex,
       dogBirth: req.body.dogBirth,
@@ -149,12 +195,10 @@ router.patch("/update/:id", async (req, res) => {
     });*/
     const updatedData = { $set: data };
     const options = { new: true };
-//console.log(data._id);
-    await Model.findByIdAndUpdate(id, updatedData, options);
-
+    //console.log(data._id);
+    await ModelDog.findByIdAndUpdate(id, updatedData, options);
 
     res.status(200).json(`Podatci o psu imena <${data.dogName}> su ažurirani!`);
-
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -164,7 +208,7 @@ router.patch("/update/:id", async (req, res) => {
 router.delete("/delete/:id", async (req, res) => {
   try {
     const id = req.params.id;
-    const data = await Model.findByIdAndDelete(id);
+    const data = await ModelDog.findByIdAndDelete(id);
     res.status(200).json(`Podatci o psu imena <${data.dogName}> su izbrisani!`);
   } catch (error) {
     res.status(400).json({ message: error.message });
